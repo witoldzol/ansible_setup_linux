@@ -1,3 +1,5 @@
+* Generate ssh key & upload to git
+ ssh-keygen -t rsa -b 4096 -C “blue3656@gmail.com”
 * Install ansible
 sudo apt-get update && apt-get install ansible -y
 * Install git

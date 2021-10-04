@@ -1,0 +1,52 @@
+---
+- hosts: localhost
+  connection: local
+  ignore_errors: yes
+  
+  tasks:
+  - name: Install VSCode
+    package: 
+      name: visual-studio-code
+
+  - name: Install jq (json formatter)
+    package: 
+      name: jq
+
+  - name: Install nodejs
+    package:
+      name: node
+
+  - name: Install emacs
+    package: 
+      name: emacs
+
+  - name: Install packages for doom
+    package:
+      name: 
+        - ripgrep 
+        - coreutils 
+        - fd
+
+  - name: Check if DOOM is installed
+    stat:
+      path: ~/.emacs.d/bin/doom
+    register: stat_result
+
+  - name: Install DOOM
+    shell: | 
+      git clone https://github.com/hlissner/doom-emacs ~/.emacs.d
+      ~/.emacs.d/bin/doom install -y
+    when: not stat_result.stat.exists
+
+  - name: Copy custom Doom config
+    shell: | 
+      cd /tmp
+      git clone git@github.com:witoldzol/emacs_doom_config.git
+      mv /tmp/emacs_doom_config/* ~/.doom.d/
+      rm -rf /tmp/emacs_doom_config
+
+  - name: Reload doom with the new config settings
+    shell: | 
+      cd ~/.emacs.d/bin
+      ./doom sync
+
