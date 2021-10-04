@@ -1,0 +1,10 @@
+* Install ansible
+sudo apt-get update && apt-get install ansible -y
+* Install git
+sudo apt install git -y
+* Configure git
+git config --global user.name "Witold Zolnowski" 
+git config --global user.email "blue3656@gmail.com"
+
+* Run ansible playbook from git
+ansible-pull -U https://github.com/witoldzol/ansible_setup.git
