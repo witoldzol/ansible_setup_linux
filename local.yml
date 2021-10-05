@@ -2,51 +2,104 @@
 - hosts: localhost
   connection: local
   ignore_errors: yes
+  become: yes
+  vars:
+    local_user: witold
   
   tasks:
-  - name: Install VSCode
-    package: 
-      name: visual-studio-code
+    - name: Install intellij role
+      become_user: "{{ local_user }}"
+      become: yes
+      shell: ansible-galaxy install gantsign.intellij
 
-  - name: Install jq (json formatter)
-    package: 
-      name: jq
+    - name: Run the role
+      include_role: 
+        name: gantsign.intellij
+      vars:
+        intellij_edition: ultimate
+        users:
+        - username: "{{ local_user }}"
+          intellij_default_jdk: '11'
+          intellij_disabled_plugins:
+            - org.jetbrains.plugins.gradle
+            - CVS
+            - com.intellij.uiDesigner
+            - org.jetbrains.android
+            - TestNG-J
+            - hg4idea
+            - Subversion
+            - AntSupport
+            - DevKit
+          intellij_codestyles:
+            - name: GoogleStyle
+              url: 'https://raw.githubusercontent.com/google/styleguide/gh-pages/intellij-java-google-style.xml'
+          intellij_default_codestyle: GoogleStyle
+          intellij_inspection_profiles:
+            - name: GantSign
+              url: 'https://raw.githubusercontent.com/gantsign/inspection-profile-intellij/master/GantSign.xml'
+          intellij_default_inspection_profile: GantSign
+          intellij_plugins:
+            - CheckStyle-IDEA
 
-  - name: Install nodejs
-    package:
-      name: node
+  # - name: Install VSCode
+  #   shell: |
+  #     wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+  #     install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/
+  #     sh -c 'echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
+  #     apt-get install apt-transport-https
+  #     apt-get update 
+  #     apt-get install code
 
-  - name: Install emacs
-    package: 
-      name: emacs
+  # - name: Install jq (json formatter)
+  #   package: 
+  #     name: jq
 
-  - name: Install packages for doom
-    package:
-      name: 
-        - ripgrep 
-        - coreutils 
-        - fd
+  # - name: Install nodejs
+  #   shell: |
+  #     apt-get install curl python-software-properties software-properties-common 
+  #     curl -sL https://deb.nodesource.com/setup_14.x | sudo bash - 
+  #     apt-get install nodejs -y
 
-  - name: Check if DOOM is installed
-    stat:
-      path: ~/.emacs.d/bin/doom
-    register: stat_result
+  # - name: Install emacs
+  #   shell: |
+  #     apt remove emacs -y
+  #     apt autoremove -y
+  #     add-apt-repository ppa:kelleyk/emacs -y
+  #     apt-get update -y
+  #     apt-get install emacs27 -y
 
-  - name: Install DOOM
-    shell: | 
-      git clone https://github.com/hlissner/doom-emacs ~/.emacs.d
-      ~/.emacs.d/bin/doom install -y
-    when: not stat_result.stat.exists
+  # - name: Install dependencies for doom
+  #   shell: |
+  #     apt-get install ripgrep fd-find -y
 
-  - name: Copy custom Doom config
-    shell: | 
-      cd /tmp
-      git clone git@github.com:witoldzol/emacs_doom_config.git
-      mv /tmp/emacs_doom_config/* ~/.doom.d/
-      rm -rf /tmp/emacs_doom_config
+  # - name: Clone emacs doom files
+  #   shell: |
+  #     git clone https://github.com/hlissner/doom-emacs ~/.emacs.d
 
-  - name: Reload doom with the new config settings
-    shell: | 
-      cd ~/.emacs.d/bin
-      ./doom sync
+  # - name: Check if DOOM is installed
+  #   stat:
+  #     path: ~/.emacs.d/bin/doom
+  #   register: stat_result
 
+  # - name: Install DOOM
+  #   expect:
+  #     command: /bin/bash -c "~/.emacs.d/bin/doom install"
+  #     echo: yes
+  #     responses:
+  #       (?i)an envvar file: y
+  #       (?i)install all-the-icon's fonts: y
+  #     timeout: 9
+  #   when: stat_result.stat.exists
+
+  # - name: Copy custom Doom config
+  #   become_user: "{{ local_user }}"
+  #   become: yes
+  #   shell: | 
+  #     cd /tmp
+  #     git clone https://github.com/witoldzol/emacs_doom_config.git
+  #     mv /tmp/emacs_doom_config/* ~/.doom.d/
+
+  # - name: Reload doom with the new config settings
+  #   shell: | 
+  #     cd ~/.emacs.d/bin
+  #     ./doom sync
