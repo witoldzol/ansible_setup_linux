@@ -1,4 +1,6 @@
 ---
+#  ansible-playbook local.yml --extra-vars "ansible_become_password=<PASSWORD>"
+
 - hosts: localhost
   connection: local
   ignore_errors: yes
@@ -53,6 +55,15 @@
   # - name: Install jq (json formatter)
   #   package: 
   #     name: jq
+
+    - name: Install zsh
+      package: 
+        name: zsh
+
+    - name: Install powerline fonts
+      package: 
+        name: fonts-powerline
+
     - name: Install terminator
       package: 
         name: terminator
@@ -64,17 +75,10 @@
     - name: Install i3
       package:
         name: i3
-   #    shell: apt-get install i3 
 
     - name: Install rofi
       package:
         name: rofi
-
-  # shell: apt-get install rofi
-
-    # - name: Install qtile ( window manager )
-    #   apt: 
-    #     name: qtile
 
   # - name: Install nodejs
   #   shell: |
