@@ -67,6 +67,18 @@
     - name: Install terminator
       package: 
         name: terminator
+    
+    - name: Allow snap to be installed
+      become: yes
+      shell: sudo rm /etc/apt/preferences.d/nosnap.pref
+    
+    - name: Install pycharm using snap
+      become: yes
+      shell: sudo snap install pycharm-community --classic
+
+    - name: Install snap store
+      package: 
+        name: snapd
 
     - name: Install pip3
       package: 
